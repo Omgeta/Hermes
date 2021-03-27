@@ -21,7 +21,8 @@ def create_app(test_config=None):
     def index():
         return render_template("index.html")
 
-    from . import db
+    from . import db, celeritas
     db.init_app(app)
+    app.register_blueprint(celeritas.bp)
 
     return app
