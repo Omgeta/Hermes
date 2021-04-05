@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hermes - Celeritas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div>
+        <h1>Celeritas</h1>
+        <h2>Get to your destination without the hassle</h2>
+    </div>
+    <div>
+        <form action="{{ url_for('celeritas.process') }}" method="POST">
+            <label for="src">Starting Point:</label><br>
+            <input type="text" id="src" name="src"><br>
+            <label for="dst">Ending Point:</label><br>
+            <input type="text" id="dst" name="dst"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>
