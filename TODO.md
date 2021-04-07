@@ -1,3 +1,0 @@
-# TODO
-
-2NF, 3NF DB
