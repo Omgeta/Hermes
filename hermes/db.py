@@ -1,6 +1,6 @@
 import sqlite3
-from sqlite3.dbapi2 import PARSE_DECLTYPES
 import click
+import json
 from flask import current_app, g
 from flask.cli import with_appcontext
 
@@ -38,6 +38,41 @@ def init_db_command():
     click.echo('Initialized the database.')
 
 
+@click.command("build-db")
+@with_appcontext
+def build_db_command():
+    """Populate tables"""
+    conn = get_db()
+    cur = conn.cursor()
+
+    with open("data/bus_stops.json", "r") as f:
+        cur.executemany(
+            '''
+            INSERT INTO BusStops
+            VALUES (:BusStopCode, :RoadName, :Description, :Latitude, :Longitude);
+            ''', json.load(f)
+        )
+
+    with open("data/bus_services.json", "r") as f:
+        cur.executemany(
+            '''
+            INSERT INTO BusServices
+            VALUES (:ServiceNo, :Operator, :Direction, :Category, :OriginCode, :DestinationCode, :AM_Peak_Freq, :AM_Offpeak_Freq, :PM_Peak_Freq, :PM_Offpeak_Freq, :LoopDesc)
+            ''', json.load(f)
+        )
+
+    with open("data/bus_routes.json", "r") as f:
+        cur.executemany(
+            '''
+            INSERT INTO BusRoutes
+            VALUES (NULL,:ServiceNo, :StopSequence, :BusStopCode, :Distance, :WD_FirstBus, :WD_LastBus, :SAT_FirstBus, :SAT_LastBus, :SUN_FirstBus, :SUN_LastBus);
+            ''', json.load(f)
+        )
+
+    click.echo("Built database.")
+
+
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(build_db_command)

@@ -1,32 +1,65 @@
-from .BusStop import BusStop
+class Route:
+    def __init__(self, distance: float, *services: str):
+        self._distance = distance
+        self._services = [service for service in services]
+
+    def addService(self, service: str):
+        if service not in self._services:
+            self._services.append(service)
+        else:
+            print(f"Attempted to add existing service {service}")
+
+    def removeService(self, service: str):
+        if service in self._services:
+            self._services.remove(service)
+        else:
+            print(f"Attempted to remove existing service {service}")
+
+    def getDistance(self):
+        return self._distance
+
+    def getServices(self):
+        return self._services
 
 
 class Graph:
     '''
     Adjacency List/Map to store nodes connected by directed, weighted edges.
-    [
-        OriginCode: [(DestinationCode, Distance, BusServicesList), ...]
-        1: [(2, 0.5, ["10", "101A"])]
-        2: ...
-    ]
+
+    {
+        start: {
+            end: Route(dist, [services])
+        },
+        ...
+    }
     '''
 
     def __init__(self):
-        self._adjmap = {}
+        self._map = {}
 
-    def addNode(self, node: BusStop):
-        self._adjmap[node.code] = []
+    def __getitem__(self, key: str) -> dict:
+        return self._map[key]
 
-    def removeNode(self, node: BusStop):
-        del self._adjmap[node.code]
+    def __setitem__(self, key: str, value: dict):
+        self._map[key] = value
 
-    def addRoute(self, start: BusStop, end: BusStop, dist: int, service: str):
-        if not self._adjmap[start.code]:
-            self._adjmap[start.code] = (end.code, dist, [service])
+    def addNode(self, node: str):
+        if node not in self._map:
+            self[node] = {}
         else:
-            self._adjmap[start.code][2].append(service)
+            print(f"Attempted to add already existing node {node}.")
 
-    def removeRoute(self, start, end):
-        for route in self._adjmap[start.code]:
-            if route[0].code == end:
-                del route
+    def removeNode(self, node: str):
+        if node in self._map:
+            del self[node]
+        else:
+            print(f"Attempted to remvove non-existing node {node}")
+
+    def addRoute(self, startNode: str, endNode: str, dist: float, service: str):
+        if endNode in self[startNode] and dist >= self[startNode][endNode].distance:
+            self[startNode][endNode].addService(service)
+        else:
+            self[startNode][endNode] = Route(dist, service)
+
+    def removeRoute(self, startNode: str, endNode: str):
+        del self[startNode][endNode]

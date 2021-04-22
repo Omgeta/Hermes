@@ -1,6 +1,7 @@
-import functools
+from math import sqrt
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from hermes.db import get_db
+#from hermes import graph
 
 
 bp = Blueprint("celeritas", __name__, url_prefix="/celeritas")
@@ -37,3 +38,21 @@ def process():
 @bp.route("result")
 def result():
     return render_template('celeritas/result.html')
+
+
+# def cost(a: str, b: str) -> float:
+#     g = graph[a][b].getDistance()
+
+#     conn = get_db()
+#     cur = conn.cursor()
+#     a_pos = cur.execute(
+#         f"SELECT Latitude, Longitude FROM BusStops WHERE BusStopCode = {a}").fetchone()
+#     b_pos = cur.execute(
+#         f"SELECT Latitude, Longitude FROM BusStops WHERE BusStopCode = {b}").fetchone()
+#     h = sqrt((a_pos[0] - b_pos[0])**2 + (a_pos[1] - b_pos[1])**2)
+
+#     return g + h
+
+
+# def astar(src, dst):
+#     pass

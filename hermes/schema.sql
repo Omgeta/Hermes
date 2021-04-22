@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS BusServices;
 DROP TABLE IF EXISTS BusStops;
 
 CREATE TABLE BusRoutes (
-    id INTEGER AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     BusServiceNo TEXT,
     StopSequence INTEGER,
     BusStopCode TEXT,
@@ -14,9 +14,8 @@ CREATE TABLE BusRoutes (
     SAT_LastBus TEXT,
     SUN_FirstBus TEXT,
     SUN_LastBus TEXT,
-    PRIMARY KEY (id),
     FOREIGN KEY (BusServiceNo) REFERENCES BusServices (ServiceNo),
-    FOREIGN KEY (BusStopCode) REFERENCES BusStops (StopCode),
+    FOREIGN KEY (BusStopCode) REFERENCES BusStops (StopCode)
 );
 
 CREATE TABLE BusServices (
@@ -31,7 +30,7 @@ CREATE TABLE BusServices (
     PM_Peak_Freq TEXT,
     PM_Offpeak_Freq TEXT,
     LoopDesc TEXT,
-    PRIMARY KEY (ServiceNo, Direction),
+    PRIMARY KEY (ServiceNo, Direction)
 );
 
 CREATE TABLE BusStops (
@@ -40,5 +39,5 @@ CREATE TABLE BusStops (
     Description TEXT,
     Latitude REAL,
     Longitude REAL,
-    PRIMARY KEY (BusStopCode),
+    PRIMARY KEY (BusStopCode)
 );
