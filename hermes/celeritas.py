@@ -1,7 +1,7 @@
 from math import sqrt
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from hermes.db import get_db
-#from hermes import graph
+from hermes.helpers import astar
 
 
 bp = Blueprint("celeritas", __name__, url_prefix="/celeritas")
