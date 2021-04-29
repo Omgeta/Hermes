@@ -1,1 +1,1 @@
-from .astar import astar
+from .astar import AStar

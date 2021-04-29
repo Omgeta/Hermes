@@ -1,32 +1,37 @@
 import os
-from flask import Flask, render_template
-from .structures import Graph
+from flask import Flask, render_template, g, current_app
+from .structures.Graph import BusGraph
+from .db import get_db
+from .helpers import AStar
 
-global graph
-graph = Graph()
+graph = None
+astar = None
 
 
-def init_graph():
-    from .db import get_db
+def init_graph() -> BusGraph:
+    temp_graph = BusGraph()
     conn = get_db()
     cur = conn.cursor()
 
     cur.execute("SELECT * FROM BusStops")
     for stop in cur:
-        graph.addStop(stop["BusStopCode"])
+        temp_graph.addStop(stop["BusStopCode"])
 
     cur.execute("SELECT * FROM BusRoutes")
+    curr, prev = None, None
     for route in cur:
         curr = route
 
-        if curr["StopSequence"] > prev["StopSequence"]:
-            dist = float("%.1f" % abs(curr["Distance" - prev["StopSequence"]]))
-            graph.addRoute(prev["BusStopCode"],
-                           curr["BusStopCode"],
-                           dist,
-                           prev["BusServiceNo"])
+        if curr and prev and curr["StopSequence"] > prev["StopSequence"]:
+            dist = float("%.1f" % abs(curr["Distance"] - prev["Distance"]))
+            temp_graph.addRoute(prev["BusStopCode"],
+                                curr["BusStopCode"],
+                                dist,
+                                prev["BusServiceNo"])
 
         prev = curr
+
+    return temp_graph
 
 
 def create_app(test_config=None):
@@ -44,6 +49,15 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    from . import db
+    db.init_app(app)
+
+    with app.app_context():
+        global graph
+        global astar
+        graph = init_graph()
+        astar = AStar(graph)
+
     # root page
     @app.route('/')
     def index():
@@ -51,12 +65,5 @@ def create_app(test_config=None):
 
     from . import celeritas
     app.register_blueprint(celeritas.bp)
-
-    # init
-    from . import db
-    db.init_app(app)
-
-    with app.app_context():
-        init_graph()
 
     return app

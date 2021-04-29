@@ -1,27 +1,54 @@
-from hermes.structures.Graph import Graph, Route
+from hermes.structures.Graph import BusGraph
 from hermes.structures.PriorityQueue import PriorityQueue, Node
 from hermes.db import get_db
 from collections import defaultdict
-import math
 
 
 class AStar:
-    def __init__(self, adjmap: Graph):
+    """
+    A* Search Algorithm
+    Modified implementation from: https://en.wikipedia.org/wiki/A*_search_algorithm
+    """
+
+    def __init__(self, adjmap: BusGraph):
         self.adjmap = adjmap
-        self.conn = get_db()
 
         self.srccode = None
         self.dstcode = None
         self.stops = {}
 
     def addStop(self, code: str):
-        cur = self.conn.cursor()
+        """
+        Memoize bus stop details
+
+            Parameters:
+                code (str): Bus stop code to find and memoize
+        """
+        conn = get_db()
+        cur = conn.cursor()
         cur.execute(f"SELECT * FROM BusStops WHERE BusStopCode = {code}")
         stop = cur.fetchone()
 
+        # debug
+        if stop is None:
+            with open("out.txt", "w+") as f:
+                for each in cur.execute("SELECT * FROM BusStops").fetchall():
+                    if each["BusStopCode"] == code:
+                        f.write(",".join(map(str, each)))
+
         self.stops[code] = stop
 
-    def reconstruct_path(self, came_from: list, current_code: str):
+    def reconstruct_path(self, came_from: list, current_code: str) -> list:
+        """
+        Return final path between start and end stop.
+
+            Parameters:
+                came_from (list): List tracking which stops were passed through to the current stop.
+                current_code (str): Code of end stop.
+
+            Returns:
+                total_path (list): List of stops that were passed through from start to end.
+        """
         total_path = [current_code]
         while current_code in came_from:
             current_code = came_from[current_code]
@@ -29,6 +56,16 @@ class AStar:
         return total_path
 
     def search(self, srccode: str, dstcode: str) -> list:
+        """
+        Search shortest path from start to end stop using A* Algorithm.
+
+            Parameters:
+                srccode (str): Starting bus stop code.
+                dstcode (String): Ending bus stop code.
+
+            Returns:
+                total_path (list): List of stops that were passed through from start to end.
+        """
         self.srccode, self.dstcode = srccode, dstcode
         self.addStop(self.srccode)
         self.addStop(self.dstcode)
@@ -54,23 +91,47 @@ class AStar:
 
             pq.remove(curr_node)
             for neighbour_code in self.adjmap[curr_code]:
+                if neighbour_code not in self.stops:
+                    self.addStop(neighbour_code)
+
                 temp_g = g[curr_code] + self.d(curr_code, neighbour_code)
                 if temp_g < g[neighbour_code]:
                     came_from[neighbour_code] = curr_code
                     g[neighbour_code] = temp_g
                     f[neighbour_code] = g[neighbour_code] + \
                         self.h(neighbour_code)
-                    if neighbour_code not in pq.pq:
+                    if neighbour_code not in pq.pq and neighbour_code not in pq.removed:
                         pq.insert(Node(f[neighbour_code], neighbour_code))
 
-        return -1
+        return []
 
-    def d(self, curr_code, next_code: str) -> int:
-        route = self.adjmap[curr_code][next_code]
-        return route.getDistance()
+    def d(self, a: str, b: str) -> float:
+        """
+        g-cost fn
+        Distance between two bus stops on a route.
 
-    def h(self, next_code: str) -> float:
-        curr_stop = self.stops[next_code]
+            Parameters:
+                a (str): First bus stop code.
+                b (str): Second bus stop code.
+
+            Returns:
+                dist (float): Distance from a to b.
+        """
+        dist = self.adjmap.getDistance(a, b)
+        return dist
+
+    def h(self, a: str) -> float:
+        """
+        h-cost fn (heuristic cost function)
+        Linear euclidean distance between a bus stop and the ending stop.
+
+            Parameters:
+                a (str): Bus stop code.
+
+            Returns:
+                dist (float): Linear euclidean distance between a and ending stop.
+        """
+        stop = self.stops[a]
         end_stop = self.stops[self.dstcode]
 
-        return abs((end_stop["Latitude"] - curr_stop["Latitude"])) + abs((end_stop["Longitude"] - curr_stop["Longitude"]))
+        return (abs((end_stop["Latitude"] - stop["Latitude"])) + abs((end_stop["Longitude"] - stop["Longitude"])))*5

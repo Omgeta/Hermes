@@ -68,6 +68,14 @@
     <main class="center">
         <h1>Celeritas</h1>
         <p>A to B in the fastest way possible.</p>
+
+        <form action="{{ url_for('celeritas.process') }}" method="POST">
+            <label for="src">Starting Point:</label><br>
+            <input type="text" id="src" name="src"><br>
+            <label for="dst">Ending Point:</label><br>
+            <input type="text" id="dst" name="dst"><br>
+            <input type="submit" value="Submit">
+        </form>
     </main>
 </body>
 </html>

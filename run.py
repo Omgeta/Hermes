@@ -1,7 +1,18 @@
-import json
+class A:
+    def __init__(self, a):
+        self.a = a
 
-with open("data/bus_routes.json") as f:
-    data = json.load(f)
+    def idk(self):
+        print("Hello world!")
 
-for key in data[0].keys():
-    print(f":{key}, ", end="")
+
+class B(A):
+    def idk(self):
+        print("Hell")
+
+    def b(self):
+        print("a different thing!")
+
+
+b = B("a")
+b.idk()

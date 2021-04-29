@@ -30,18 +30,7 @@ def init_db():
         db.executescript(f.read().decode("utf-8"))
 
 
-@click.command("init-db")
-@with_appcontext
-def init_db_command():
-    """Clear the existing data and create new tables."""
-    init_db()
-    click.echo('Initialized the database.')
-
-
-@click.command("build-db")
-@with_appcontext
-def build_db_command():
-    """Populate tables"""
+def build_db():
     conn = get_db()
     cur = conn.cursor()
 
@@ -65,10 +54,26 @@ def build_db_command():
         cur.executemany(
             '''
             INSERT INTO BusRoutes
-            VALUES (NULL,:ServiceNo, :StopSequence, :BusStopCode, :Distance, :WD_FirstBus, :WD_LastBus, :SAT_FirstBus, :SAT_LastBus, :SUN_FirstBus, :SUN_LastBus);
+            VALUES (NULL, :ServiceNo, :StopSequence, :BusStopCode, :Distance, :WD_FirstBus, :WD_LastBus, :SAT_FirstBus, :SAT_LastBus, :SUN_FirstBus, :SUN_LastBus);
             ''', json.load(f)
         )
 
+    conn.commit()
+
+
+@click.command("init-db")
+@with_appcontext
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    init_db()
+    click.echo('Initialized the database.')
+
+
+@click.command("build-db")
+@with_appcontext
+def build_db_command():
+    """Populate tables"""
+    build_db()
     click.echo("Built database.")
 
 
