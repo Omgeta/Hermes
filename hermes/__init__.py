@@ -1,8 +1,8 @@
 import os
 from flask import Flask, render_template, g, current_app
 from .structures.Graph import BusGraph
+from .structures.AStar import AStar
 from .db import get_db
-from .helpers import AStar
 
 graph = None
 astar = None

@@ -10,8 +10,9 @@ class AStar:
     Modified implementation from: https://en.wikipedia.org/wiki/A*_search_algorithm
     """
 
-    def __init__(self, adjmap: BusGraph):
+    def __init__(self, adjmap: BusGraph, debug=True):
         self.adjmap = adjmap
+        self.debug = debug
 
         self.srccode = None
         self.dstcode = None
@@ -29,8 +30,7 @@ class AStar:
         cur.execute(f"SELECT * FROM BusStops WHERE BusStopCode = {code}")
         stop = cur.fetchone()
 
-        # debug
-        if stop is None:
+        if stop is None and self.debug:
             with open("out.txt", "w+") as f:
                 for each in cur.execute("SELECT * FROM BusStops").fetchall():
                     if each["BusStopCode"] == code:

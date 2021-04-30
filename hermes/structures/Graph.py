@@ -12,7 +12,7 @@ class Graph:
     def __setitem__(self, key, value):
         self._map[key] = value
 
-    def __inclusion__(self, key):
+    def __contains__(self, key):
         return key in self._map
 
     def addNode(self, node: str):
@@ -35,40 +35,40 @@ class Graph:
         if node in self:
             del self[node]
 
-    def addEdge(self, from: str, to: str, weight: float, data):
+    def addEdge(self, a: str, b: str, weight: float, data):
         """
         Add a weighted edge between two nodes with some data.
 
             Parameters:
-                from (str): Name of starting node
-                to (str): Name of ending node
+                a (str): Name of starting node
+                b (str): Name of ending node
                 weight (float): Weight between starting and ending nodes
                 data (any): Some data to carry
         """
-        self[from][to] = (weight, data)
+        self[a][b] = (weight, data)
 
-    def editEdge(self, from: str, to: str, new):
+    def editEdge(self, a: str, b: str, new):
         """
         Edits the data of an existing edge between two nodes.
 
             Parameters:
-                from (str): Name of starting node
-                to (str): Name of ending node
+                a (str): Name of starting node
+                b (str): Name of ending node
                 new (any): Some new data to replace old data
         """
-        if from in self and to in self[from]:
-            weight, data = self[from][to]
-            self[from][to] = (weight, new)
+        if a in self and b in self[a]:
+            weight, data = self[a][b]
+            self[a][b] = (weight, new)
 
-    def removeEdge(self, from: str, to: str):
+    def removeEdge(self, a: str, b: str):
         """
         Removes an edge between two nodes
 
             Parameters:
-                from (str): Name of starting node
-                to (str): Name of ending node
+                a (str): Name of starting node
+                b (str): Name of ending node
         """
-        del self[from][to]
+        del self[a][b]
 
 
 class BusGraph(Graph):
@@ -94,65 +94,65 @@ class BusGraph(Graph):
         """
         super().removeNode(stop)
 
-    def addRoute(self, from: str, to: str, dist: float, service: str):
+    def addRoute(self, a: str, b: str, dist: float, service: str):
         """
         Adds shortest bus route between two stops on the graph and the services that pass through it.
 
             Parameters:
-                from (str): Code of starting stop
-                to (str): Code of ending stop
+                a (str): Code of starting stop
+                b (str): Code of ending stop
                 dist (float): Distance between starting and ending stops
                 service (str): Service passing through the route
         """
-        if from in self:
-            if to in self[from]:
-                curr_dist, services = self[from][to]
+        if a in self:
+            if b in self[a]:
+                curr_dist, services = self[a][b]
                 if dist < curr_dist:  # if shortest path exists, overwrite old path
-                    self.removeRoute(from, to)
-                    self.addRoute(from, to, dist, service)
+                    self.removeRoute(a, b)
+                    self.addRoute(a, b, dist, service)
                 elif dist == curr_dist:  # if same distance, add new service to path
                     if service not in services:
                         services.append(service)
-                    super().editEdge(from, to, services)
+                    super().editEdge(a, b, services)
             else:  # if no path exists, add new path
-                super().addEdge(from, to, dist, [service])
+                super().addEdge(a, b, dist, [service])
 
-    def removeRoute(self, from: str, to: str):
+    def removeRoute(self, a: str, b: str):
         """
         Removes a bus route between two stops on the graph.
 
             Parameters:
-                from (str): Code of starting stop
-                to (str): Code of ending stop
+                a (str): Code of starting stop
+                b (str): Code of ending stop
         """
-        super().removeEdge(from, to)
+        super().removeEdge(a, b)
 
-    def getDistance(self, from: str, to: str) -> float:
+    def getDistance(self, a: str, b: str) -> float:
         """
         Returns distance between two stops on the graph.
 
             Parameters:
-                from (str): Code of starting stop
-                to (str): Code of ending stop
+                a (str): Code of starting stop
+                b (str): Code of ending stop
 
             Returns:
                 dist (float): Distance between starting and ending stops.
         """
-        if from in self and to in self[from]:
-            dist, services = self[from][to]
+        if a in self and b in self[a]:
+            dist, services = self[a][b]
             return dist
 
-    def getServices(self, from: str, to: str) -> list:
+    def getServices(self, a: str, b: str) -> list:
         """
         Returns a list of services between two stops on the graph.
 
             Parameters:
-                from (str): Code of starting stop
-                to (str): Code of ending stop
+                a (str): Code of starting stop
+                b (str): Code of ending stop
 
             Returns:
                 services (list): List of services passing through starting and ending stops.    
         """
-        if from in self and to in self[from]:
-            dist, services = self[from][to]
+        if a in self and b in self[a]:
+            dist, services = self[a][b]
             return services

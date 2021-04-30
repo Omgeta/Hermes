@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
-from hermes.helpers import AStar
+from hermes.structures import AStar
 from hermes import graph, astar
 
 
