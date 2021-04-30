@@ -36,7 +36,7 @@ CREATE TABLE BusServices (
 CREATE TABLE BusStops (
     BusStopCode TEXT,
     RoadName TEXT,
-    Description TEXT,
+    "Description" TEXT,
     Latitude REAL,
     Longitude REAL,
     PRIMARY KEY (BusStopCode)
