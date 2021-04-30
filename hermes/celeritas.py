@@ -27,7 +27,7 @@ def process():
 
             with current_app.app_context():
                 res = astar.search(src, dst)
-                print(res)
+                print(res, len(res))
 
             return redirect(url_for("celeritas.result"))
 

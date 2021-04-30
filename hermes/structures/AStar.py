@@ -7,7 +7,6 @@ from collections import defaultdict
 class AStar:
     """
     A* Search Algorithm
-    Modified implementation from: https://en.wikipedia.org/wiki/A*_search_algorithm
     """
 
     def __init__(self, adjmap: BusGraph, debug=True):
@@ -27,14 +26,8 @@ class AStar:
         """
         conn = get_db()
         cur = conn.cursor()
-        cur.execute(f"SELECT * FROM BusStops WHERE BusStopCode = {code}")
+        cur.execute(f"SELECT * FROM BusStops WHERE BusStopCode = ?", (code, ))
         stop = cur.fetchone()
-
-        if stop is None and self.debug:
-            with open("out.txt", "w+") as f:
-                for each in cur.execute("SELECT * FROM BusStops").fetchall():
-                    if each["BusStopCode"] == code:
-                        f.write(",".join(map(str, each)))
 
         self.stops[code] = stop
 
@@ -72,7 +65,6 @@ class AStar:
 
         pq = PriorityQueue()
         start_node = Node(0, srccode)
-        end_node = Node(0, dstcode)
         pq.insert(start_node)
 
         came_from = {}
@@ -84,12 +76,11 @@ class AStar:
         f[srccode] = 0
 
         while len(pq) > 0:
-            curr_node = pq.minimum()
+            curr_node = pq.removeminimum()
             curr_code = curr_node.value
-            if curr_node == end_node:
+            if curr_code == dstcode:
                 return self.reconstruct_path(came_from, curr_code)
 
-            pq.remove(curr_node)
             for neighbour_code in self.adjmap[curr_code]:
                 if neighbour_code not in self.stops:
                     self.addStop(neighbour_code)
@@ -134,4 +125,4 @@ class AStar:
         stop = self.stops[a]
         end_stop = self.stops[self.dstcode]
 
-        return (abs((end_stop["Latitude"] - stop["Latitude"])) + abs((end_stop["Longitude"] - stop["Longitude"])))*5
+        return abs(end_stop["Latitude"] - stop["Latitude"]) + abs(end_stop["Longitude"] - stop["Longitude"])

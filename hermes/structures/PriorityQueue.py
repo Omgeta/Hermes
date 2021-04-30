@@ -57,6 +57,15 @@ class PriorityQueue:
             self.removed.add(entry)
             self.count -= 1
 
+    def removeminimum(self):
+        while True:
+            (priority, item) = heapq.heappop(self.pq)
+            if (priority, item) in self.removed:
+                self.removed.discard((priority, item))
+            else:
+                self.count -= 1
+                return Node(priority, item)
+
     def decreasekey(self, node: Node, new_priority):
         """
         Modify weight of a node in the PQ.

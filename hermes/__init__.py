@@ -9,6 +9,12 @@ astar = None
 
 
 def init_graph() -> BusGraph:
+    """
+    Returns a graph containing all bus stops connected by their routes.
+
+        Returns:
+            temp_graph (BusGraph): BusGraph of Singapore bus routes.
+    """
     temp_graph = BusGraph()
     conn = get_db()
     cur = conn.cursor()
@@ -49,9 +55,11 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # init db
     from . import db
     db.init_app(app)
 
+    # init data structures
     with app.app_context():
         global graph
         global astar
@@ -63,6 +71,7 @@ def create_app(test_config=None):
     def index():
         return render_template("index.html")
 
+    # load blueprints
     from . import celeritas
     app.register_blueprint(celeritas.bp)
 
