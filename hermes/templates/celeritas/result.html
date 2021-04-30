@@ -65,24 +65,36 @@
     </nav>
 
     <main class="center">
-        <h1>Celeritas</h1>
-        <p>A to B in the fastest way possible.</p>
+        <h1>Celeritas - Results</h1>
 
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <p style="color: red">{{ message }}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-
-        <form action="{{ url_for('celeritas.process') }}" method="POST">
-            <label for="src">Starting bus stop code:</label><br>
-            <input type="text" id="src" name="src" placeholder="01012"><br>
-            <label for="dst">Ending bus stop code:</label><br>
-            <input type="text" id="dst" name="dst" placeholder="99189"><br>
-            <input type="submit" value="Submit">
-        </form>
+        <table style="width: 100%;border-spacing: 0; " border="0" cellpadding="5">
+            <tbody>
+                <tr class="headertext">
+                    <th style="width: 20%" class="fontbold underline">Road Name</th>
+                    <th style="width: 10%" class="fontbold underline">Bus Stop No.</th>
+                    <th style="width: 30%" class="fontbold underline">Bus Stop Name</th>
+                    <th style="width: 10%" class="fontbold underline">Dist(km)</th>
+                    <th style="width: 30%" class="fontbold underline">Services</th>
+                </tr>
+                {% set ns = namespace(dist=0.0, prev=None) %}
+                {% for route in routes %}
+                <tr>
+                    {% if ns.prev != route[1] %}
+                    {% if ns.prev != None and mapping[ns.prev]|length > 1 %}
+                    {% set _ = mapping.update({ns.prev: mapping[ns.prev][1:] }) %}
+                    {% endif %}
+                    <td class="fontbold center" rowspan={{ mapping[route[1]][0] }}>{{ route[1] }}</td>
+                    {% endif %}
+                    {% set ns.prev = route[1] %}
+                    <td class="col2bg center">{{ route[0] }}</td>
+                    <td class="fontbold">{{ route[2] }}</td>
+                    <td class="col2bg center">{{ ns.dist|round(1) }}</td>
+                    {% set ns.dist = ns.dist + route[3] %}
+                    <td class="center">{{ route[4]|join(", ") or "-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </main>
 </body>
 </html>

@@ -46,6 +46,7 @@ main {
   color: var(--text-primary);
   background-color: var(--bg-tertiary);
   height: 100vh;
+  overflow: auto;
 }
 
 .center {
@@ -144,6 +145,33 @@ main {
 
 .navbar:hover .logo svg {
   transform: rotate(-180deg);
+}
+
+.headertext {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.fontbold {
+  font-weight: bold;
+}
+
+tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+}
+
+.col1bg {
+  background-color: var(--bg-secondary)
+}
+
+.col2bg {
+  background-color: var(--bg-primary)
+}
+
+.underline {
+  border-bottom: solid 1px;
 }
 
 /* Small screens */

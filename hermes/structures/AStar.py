@@ -9,9 +9,8 @@ class AStar:
     A* Search Algorithm
     """
 
-    def __init__(self, adjmap: BusGraph, debug=True):
+    def __init__(self, adjmap: BusGraph):
         self.adjmap = adjmap
-        self.debug = debug
 
         self.srccode = None
         self.dstcode = None
@@ -31,7 +30,7 @@ class AStar:
 
         self.stops[code] = stop
 
-    def reconstruct_path(self, came_from: list, current_code: str) -> list:
+    def reconstruct_path(self, came_from: list, current_code: str) -> tuple:
         """
         Return final path between start and end stop.
 
@@ -41,12 +40,25 @@ class AStar:
 
             Returns:
                 total_path (list): List of stops that were passed through from start to end.
+                total_route (list): List of routes between each pair of stops from start to end.
         """
-        total_path = [current_code]
+
+        def getbustuple(code): return tuple(self.stops[code])[:3]
+
+        total_path = [getbustuple(current_code)]
         while current_code in came_from:
             current_code = came_from[current_code]
-            total_path.insert(0, current_code)
-        return total_path
+            total_path.insert(0, getbustuple(current_code))
+
+        total_route = []
+        for i in range(len(total_path) - 1):
+            curr_code, next_code = total_path[i][0], total_path[i+1][0]
+            route = self.adjmap[curr_code][next_code]
+            total_route.append(route)
+        total_route.append((0.0, []))
+
+        # print(total_path, len(total_path))
+        return total_path, total_route
 
     def search(self, srccode: str, dstcode: str) -> list:
         """

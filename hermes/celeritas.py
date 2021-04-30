@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for, current_app
 from hermes.structures import AStar
 from hermes import graph, astar
 
@@ -18,16 +18,35 @@ def process():
         dst = request.form['dst']
         error = None
 
-        if not src:  # and if not valid
+        if not src or src not in graph:
             error = "Invalid starting point."
-        elif not dst:  # and if not valid
+        elif not dst or dst not in graph:
             error = "Invalid ending point."
+        elif src == dst:
+            error = "Starting and ending points cannot be the same."
 
         if error is None:
-
             with current_app.app_context():
-                res = astar.search(src, dst)
-                print(res, len(res))
+                total_path, total_route = astar.search(src, dst)
+                global routes
+                routes = [a + b for a, b in zip(total_path, total_route)]
+
+            # create mapping for how many occurences of each road occur consecutively
+            prev, curr = None, None
+            global mapping
+            mapping = {}
+            for route in routes:
+                curr = route[1]
+
+                if curr not in mapping:
+                    mapping[curr] = [1]
+                elif curr in mapping:
+                    if curr == prev:
+                        mapping[curr][-1] += 1
+                    else:
+                        mapping[curr].extend([1])
+
+                prev = curr
 
             return redirect(url_for("celeritas.result"))
 
@@ -37,4 +56,4 @@ def process():
 
 @bp.route("result")
 def result():
-    return render_template('celeritas/result.html')
+    return render_template('celeritas/result.html', routes=routes, mapping=mapping)
