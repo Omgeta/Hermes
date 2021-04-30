@@ -1,19 +1,18 @@
 # Hermes
----
+
 
 A web application for planning your bus journies.
 
 ## Usage
----
 
-**Install the application by cloning this repo:**
+
+####Install the application by cloning this repo:
 ```
 git clone https://github.com/Omgeta/Hermes.git
 ```
 
----
 
-**Setting environment variables:**
+####Setting environment variables:
 
 Linux/MacOS: 
 ```
@@ -33,18 +32,18 @@ $env:FLASK_APP = "hermes\__init__.py"
 $env:FLASK_ENV = "development"
 ```
 
----
 
-**Initialising the database:**
+
+####Initialising the database:
 
 ```
 flask init-db
 flask build-db
 ```
 
----
 
-**Running the application:**
+
+####Running the application:
 ```
 flask run
 ```
