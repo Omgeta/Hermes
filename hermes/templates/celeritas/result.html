@@ -83,14 +83,14 @@
                     {% if ns.prev != None and mapping[ns.prev]|length > 1 %}
                     {% set _ = mapping.update({ns.prev: mapping[ns.prev][1:] }) %}
                     {% endif %}
-                    <td class="fontbold center" rowspan={{ mapping[route[1]][0] }}>{{ route[1] }}</td>
+                    <td class="fontbold center underline-dark" rowspan={{ mapping[route[1]][0] }}>{{ route[1] }}</td>
                     {% endif %}
                     {% set ns.prev = route[1] %}
-                    <td class="col2bg center">{{ route[0] }}</td>
-                    <td class="fontbold">{{ route[2] }}</td>
-                    <td class="col2bg center">{{ ns.dist|round(1) }}</td>
+                    <td class="col2bg center underline-dark">{{ route[0] }}</td>
+                    <td class="fontbold underline-dark">{{ route[2] }}</td>
+                    <td class="col2bg center underline-dark">{{ ns.dist|round(1) }}</td>
                     {% set ns.dist = ns.dist + route[3] %}
-                    <td class="center">{{ route[4]|join(", ") or "-" }}</td>
+                    <td class="center underline-dark">{{ route[4]|join(", ") or "-" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
