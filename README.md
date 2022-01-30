@@ -34,16 +34,8 @@ $env:FLASK_ENV = "development"
 
 
 
-#### Initialising the database:
-
-```
-flask init-db
-flask build-db
-```
-
-
-
 #### Running the application:
 ```
-flask run
+python -m flask run
 ```
+Note: Make sure you have Werkzeug installed
