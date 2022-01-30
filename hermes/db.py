@@ -1,8 +1,6 @@
 import sqlite3
-import click
 import json
 from flask import current_app, g
-from flask.cli import with_appcontext
 
 
 def get_db():
@@ -59,25 +57,3 @@ def build_db():
         )
 
     conn.commit()
-
-
-@click.command("init-db")
-@with_appcontext
-def init_db_command():
-    """Clear the existing data and create new tables."""
-    init_db()
-    click.echo('Initialized the database.')
-
-
-@click.command("build-db")
-@with_appcontext
-def build_db_command():
-    """Populate tables"""
-    build_db()
-    click.echo("Built database.")
-
-
-def init_app(app):
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)
-    app.cli.add_command(build_db_command)

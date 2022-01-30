@@ -57,7 +57,9 @@ def create_app(test_config=None):
 
     # init db
     from . import db
-    db.init_app(app)
+    with app.app_context():
+        db.init_db()
+        db.build_db()
 
     # init data structures
     with app.app_context():
